@@ -1,9 +1,11 @@
-package utils
+package server
 
 import (
 	"encoding/json"
-	"github.com/gorilla/websocket"
 	"log"
+	"qr-backend/utils"
+
+	"github.com/gorilla/websocket"
 )
 
 type request struct {
@@ -29,7 +31,7 @@ func Reader(conn *websocket.Conn) {
 		// Handle request type
 		switch req.Message {
 		case "requestToken":
-			token := GenerateToken()
+			token := utils.GenerateToken()
 			resp, _ := json.Marshal(map[string]string{"token": token})
 
 			err := conn.WriteMessage(messageType, resp)

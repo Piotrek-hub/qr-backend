@@ -1,13 +1,13 @@
-package main
+package server
 
 import (
 	"encoding/json"
+	"log"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/rs/cors"
-	"log"
-	"net/http"
-	"qr-backend/utils"
 )
 
 var upgrader = websocket.Upgrader{
@@ -30,14 +30,14 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("New Connection")
 
 	// Read messages
-	utils.Reader(ws)
+	Reader(ws)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"hello": "world"})
 }
 
-func setupRoutes() {
+func SetupRoutes() {
 	r := mux.NewRouter()
 	r.HandleFunc("/qr", socketHandler)
 	r.HandleFunc("/", homeHandler)
