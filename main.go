@@ -6,12 +6,12 @@ import (
 	"net/http"
 )
 
-var addr = flag.String("addr", "localhost:8080", "htp service address")
+var addr = flag.String("addr", "localhost:8080", "http service address")
 
 func main() {
 	setupRoutes()
 
 	log.Println("Listening on localhost:8080")
 
-	log.Println(http.ListenAndServe(*addr, nil))
+	log.Fatal(http.ListenAndServe(*addr, nil))
 }
