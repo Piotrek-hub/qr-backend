@@ -2,42 +2,42 @@ package server
 
 import (
 	"encoding/json"
+	"github.com/gorilla/websocket"
 	"log"
 	"qr-backend/utils"
-
-	"github.com/gorilla/websocket"
 )
 
 type request struct {
 	Message string
 }
 
-func Reader(conn *websocket.Conn) {
+func Reader(ws *websocket.Conn) {
 	for {
-		messageType, message, err := conn.ReadMessage()
+		messageType, msg, err := ws.ReadMessage()
+
 		if err != nil {
-			log.Fatal("[Error during reading message]: ", err)
-			return
+			log.Println("[Error during reading message]: ", err)
+			break
 		}
 
 		// Load request to struct
-		req := request{}
-		err = json.Unmarshal(message, &req)
+		var req request
+		err = json.Unmarshal(msg, &req)
+		log.Println("req: ", req)
 		if err != nil {
-			log.Fatal(err)
-			return
+			log.Println("err: ", err)
+			break
 		}
 
-		// Handle request type
+		//Handle request type
 		switch req.Message {
 		case "requestToken":
 			token := utils.GenerateToken()
 			resp, _ := json.Marshal(map[string]string{"token": token})
 
-			err := conn.WriteMessage(messageType, resp)
+			err := ws.WriteMessage(messageType, resp)
 			if err != nil {
 				log.Fatal("[Error during writing message]", err)
-				return
 			}
 
 		default:

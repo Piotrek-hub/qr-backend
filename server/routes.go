@@ -23,18 +23,21 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Fatal("[Error while upgrading to websocket]: ", err)
-		return
 	}
-	defer ws.Close()
+	defer func(ws *websocket.Conn) {
+		err := ws.Close()
+		if err != nil {
 
-	log.Println("New Connection")
-
-	// Read messages
+		}
+	}(ws)
 	Reader(ws)
 }
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(map[string]string{"hello": "world"})
+func homeHandler(w http.ResponseWriter, _ *http.Request) {
+	err := json.NewEncoder(w).Encode(map[string]string{"hello": "world"})
+	if err != nil {
+		return
+	}
 }
 
 func SetupRoutes() {
