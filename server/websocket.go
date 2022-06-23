@@ -37,11 +37,11 @@ func Reader(ws *websocket.Conn) {
 
 			err := ws.WriteMessage(messageType, resp)
 			if err != nil {
-				log.Fatal("[Error during writing message]", err)
+				log.Println("[Error during writing message]", err)
 			}
 
 		default:
-			log.Fatal("Unknown message type")
+			log.Println("Unknown message type")
 		}
 
 	}
