@@ -8,8 +8,11 @@ import (
 )
 
 type request struct {
-	Message string
+	Message string `json:"message"`
+	Token   string `json:"token"`
 }
+
+var hubs = make(map[string]*websocket.Conn)
 
 func Reader(ws *websocket.Conn) {
 	for {
@@ -23,7 +26,6 @@ func Reader(ws *websocket.Conn) {
 		// Load request to struct
 		var req request
 		err = json.Unmarshal(msg, &req)
-		log.Println("req: ", req)
 		if err != nil {
 			log.Println("err: ", err)
 			break
@@ -40,6 +42,18 @@ func Reader(ws *websocket.Conn) {
 				log.Println("[Error during writing message]", err)
 			}
 
+			hubs[token] = ws
+		case "checkToken":
+			resp, _ := json.Marshal(map[string]string{"message": "unlock"})
+			err := hubs[req.Token].WriteMessage(messageType, resp)
+			if err != nil {
+				log.Println(err)
+			}
+
+			err = ws.WriteMessage(messageType, []byte("Device unlocked"))
+			if err != nil {
+				log.Println(err)
+			}
 		default:
 			log.Println("Unknown message type")
 		}

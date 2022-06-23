@@ -27,7 +27,7 @@ func socketHandler(w http.ResponseWriter, r *http.Request) {
 	defer func(ws *websocket.Conn) {
 		err := ws.Close()
 		if err != nil {
-
+			log.Println(err)
 		}
 	}(ws)
 	Reader(ws)
